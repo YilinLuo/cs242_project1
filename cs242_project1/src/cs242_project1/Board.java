@@ -1,6 +1,8 @@
 package cs242_project1;
 import java.awt.Point;
 import java.awt.print.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
 	private Type [][] board;
@@ -129,8 +131,122 @@ public class Board {
     	return Normal_BlackPcs + King_WhitePcs;
     }
     
+    //returns true if move successful
+    public Game makeMove(Move move, Player.PlayerID playerID) {
+    	if(move == null) {
+    		return Game.GAME_ENDED;
+    	}
+    	
+    	Point start = move.getStartPoint();
+    	int startRow = start.x;
+    	int startCol = start.y;
+    	Point end = move.getEndPoint();
+    	int endRow = end.x;
+    	int endCol =  end.y;
+    	
+    	//only the piece on belonging side is moved, empty space cannot be moved
+    	if(!isMovingOwnPiece(startRow, startCol, playerID)|| getPiece(startRow, startCol) == Type.EMPTY)
+    		return Game.INVALID_PIECE;
+    	List<Move> possibleMoves = getValidMoves(startRow, startCol, playerID);
+    	
+		return null;
+    	
+    }
     
+    public List<Move> getAllValidMoves(Player.PlayerID playerID){
+    	Type normal = playerID == Player.PlayerID.BLACK? Type.BLACK : Type.WHITE;
+    	Type king = playerID == Player.PlayerID.BLACK? Type.B_KING : Type.W_KING;
+    	
+    	List<Move> possibleMoves = new ArrayList<>();
+    	for(int i=0; i<SIZE;i++) {
+    		for (int j = 0; j<SIZE; j++) {
+    			Type t = getPiece(i,j);
+    			if(t == normal || t ==king)
+    				possibleMoves.addAll(getValidMoves(i,j,playerID));
+    		}
+    	}
+    	return possibleMoves;
+    }
     
+    public List<Move> getValidMoves(int row, int col, Player.PlayerID playerID){
+    	Type type = board[row][col];
+    	Point startPoint = new Point(row,col);
+    	if(type == Type.EMPTY) 
+    		throw new IllegalArgumentException();
+    	List<Move> moves = new ArrayList<>();
+    	
+    	//if king, 4 possible moves; if normal, 2. 
+    	if(type == Type.WHITE || type == Type.BLACK) {
+    		int rowChange = type == Type.WHITE ? 1 : -1;
+    		
+    		int newRow = row + rowChange;
+    		if(newRow >= 0 || newRow< SIZE) {
+    			int newCol = col +1;
+    			if(newCol<SIZE && getPiece(newRow, newCol) == Type.EMPTY)
+    				moves.add(new Move(startPoint, new Point(newRow, newCol)));
+    			newCol = col -1;
+    			if (newCol >=0 && getPiece(newRow, newCol) == Type.EMPTY)
+    				moves.add(new Move(startPoint, new Point(newRow, newCol)));
+    		}
+    	}
+    	
+    	//case where it is a king
+    	else {
+    		// 4 possible moves
+    		int newRow = row +1;
+    		if (newRow < SIZE) {
+    			int newCol = col +1;
+    			if(newCol< SIZE && getPiece(newRow, newCol)== Type.EMPTY)
+    				moves.add(new Move(startPoint, new Point(newRow, newCol)));
+    			newCol = col-1;
+    			if(newCol >= 0 && getPiece(newRow, newCol)== Type.EMPTY)
+    				moves.add(new Move(startPoint, new Point(newRow, newCol)));
+    				
+    		}
+    	}
+    	
+    	moves.addAll(getValidSkipMoves(row,col,playerID));
+    	return moves;
+    }
+    
+    public List<Move> getValidSkipMoves(int row, int col, Player.PlayerID playerID){
+    	List<Move> move = new ArrayList<>();
+    	Point start = new Point (row,col);
+    	
+    	List<Point> possibilities = new ArrayList<>();
+    	
+    	if(playerID == Player.PlayerID.WHITE && getPiece(row,col) == Type.WHITE) {
+    		possibilities.add(new Point(row+2,col+2));
+    		possibilities.add(new Point(row-2,col-2));
+    	}
+    	
+    	else if(playerID == Player.PlayerID.BLACK && getPiece(row,col) == Type.BLACK) {
+    		possibilities.add(new Point(row+2, col+2));
+    		possibilities.add(new Point(row-2, col-2));
+    	}
+    	else if(getPiece(row,col) == Type.B_KING || getPiece(row,col)==Type.W_KING) {
+    		possibilities.add(new Point(row+2,col+2));
+    		possibilities.add(new Point(row+2,row-2));
+    		possibilities.add(new Point(row-2,row+2));
+    		possibilities.add(new Point(col-2,col-2));
+    	}
+    	for(int i=0; i< possibilities.size(); i++) {
+    		Point temp = possibilities.get(i);
+    		Move m = new Move(start,temp);
+    		if(temp.x<SIZE&&temp.x>=0 && temp.y<SIZE && temp.y>=0 && getPiece(temp.x, temp.y) == Type.EMPTY && isOpponentPiece(playerID, getPiece(findMidSquare(m)))) {
+    			move.add(m);
+    		}
+    	}
+    }
+    
+    private boolean isMovingOwnPiece(int row, int col, Player.PlayerID playerID) {
+    	Type pieceType = getPiece(row, col);
+    	if(playerID == Player.PlayerID.BLACK && pieceType != Type.BLACK && pieceType != Type.B_KING)
+    		return false;
+    	else if (playerID == Player.PlayerID.WHITE && pieceType != Type.WHITE && pieceType != Type.W_KING)
+    		return false;
+    	return true;
+    }
 /*	
 	public static void main(String args[]){	
 		int upper_eight = 8;
