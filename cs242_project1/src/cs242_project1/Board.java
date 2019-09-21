@@ -4,6 +4,8 @@ import java.awt.print.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import cs242_project1.Player.PlayerID;
+
 public class Board {
 	private Type [][] board;
 	public int SIZE = 8;
@@ -209,6 +211,12 @@ public class Board {
     	return moves;
     }
     
+    private Point eatOpponent(Move move) {
+    Point opponent = new Point((move.getStartPoint().x + move.getStartPoint().x)/2, (move.getStartPoint().y+move.getEndPoint().y)/2);
+    
+    return opponent;
+    }
+    
     public List<Move> getValidSkipMoves(int row, int col, Player.PlayerID playerID){
     	List<Move> move = new ArrayList<>();
     	Point start = new Point (row,col);
@@ -233,10 +241,20 @@ public class Board {
     	for(int i=0; i< possibilities.size(); i++) {
     		Point temp = possibilities.get(i);
     		Move m = new Move(start,temp);
-    		if(temp.x<SIZE&&temp.x>=0 && temp.y<SIZE && temp.y>=0 && getPiece(temp.x, temp.y) == Type.EMPTY && isOpponentPiece(playerID, getPiece(findMidSquare(m)))) {
+    		if(temp.x<SIZE&&temp.x>=0 && temp.y<SIZE && temp.y>=0 && getPiece(temp.x, temp.y) == Type.EMPTY && isOpponentPiece(playerID, getPiece(eatOpponent(m)))) {
     			move.add(m);
     		}
     	}
+    	
+    	return move;
+    }
+    
+    private boolean isOpponentPiece(Player.PlayerID current, Type opponentPiece) {
+    	if(current == Player.PlayerID.BLACK && (opponentPiece ==Type.WHITE || opponentPiece == Type.W_KING))
+    		return true;
+    	if(current == Player.PlayerID.WHITE && (opponentPiece == Type.BLACK || opponentPiece == Type.B_KING))
+    		return true;
+    	return false;
     }
     
     private boolean isMovingOwnPiece(int row, int col, Player.PlayerID playerID) {
@@ -246,6 +264,21 @@ public class Board {
     	else if (playerID == Player.PlayerID.WHITE && pieceType != Type.WHITE && pieceType != Type.W_KING)
     		return false;
     	return true;
+    }
+    
+    public Board clone() {
+    	if(four_board == true) {
+    		SIZE =4;
+    	}
+    		Type [][] newBoard = new Type[SIZE][SIZE];
+    		 for (int i = 0; i<SIZE; i++) {
+    			 for(int j =0; j<SIZE; j++) {
+    				 newBoard[i][j] = board[i][j];
+    			 }
+    		 }
+    		
+    		 Board b = new Board(newBoard, four_board);
+    		 return b;
     }
 /*	
 	public static void main(String args[]){	
