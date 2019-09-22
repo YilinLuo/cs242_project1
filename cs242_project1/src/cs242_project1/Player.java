@@ -24,7 +24,7 @@ public class Player {
 		return playerID;
 	}
 	
-	public Board.Game makeMove(Move m, Board b){
+	public Board.Movement makeMove(Move m, Board b){
 		return b.makeMove(m,playerID);
 	}
 	
