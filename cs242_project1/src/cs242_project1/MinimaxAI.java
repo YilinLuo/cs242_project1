@@ -79,6 +79,7 @@ public class MinimaxAI extends Player implements AI{
     }
     
     private double minimax(Board board, int depth, PlayerID playerID, boolean maximizingPlayer, double alpha, double beta) {
+    	System.out.println("Depth is: "+depth);
     	if(depth == 0) {
     		return getHeuristic(board);
     	}

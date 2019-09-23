@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cs242_project1.Player.PlayerID;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
 	private Type[][] board;
 	public int SIZE = 8;
-	public boolean board_4X4;
+	
 
 	private enum Type {
 		EMPTY, WHITE, BLACK, W_KING, B_KING
@@ -25,7 +28,7 @@ public class Board {
 	private int King_WhitePcs;
 
 	public Board() {
-//		 setUpBoard(board_4X4);
+		 setUpBoard(Main.board_4X4);
 	}
 
 	public Board(Type[][] board, boolean board_4X4) {
@@ -34,7 +37,7 @@ public class Board {
 		King_BlackPcs = 0;
 		King_WhitePcs = 0;
 
-		if (board_4X4 == true) {
+		if (Main.board_4X4 == true) {
 			SIZE = 4;
 		}
 		this.board = board;
@@ -61,7 +64,7 @@ public class Board {
 		King_BlackPcs = 0;
 		King_WhitePcs = 0;
 
-		if (board_4X4 == true) {
+		if (Main.board_4X4 == true) {
 			Normal_WhitePcs = 2;
 			Normal_BlackPcs = 2;
 			SIZE = 4;
@@ -321,7 +324,7 @@ public class Board {
 
 	// Method to clone the board
 	public Board clone() {
-		if (board_4X4 == true) {
+		if (Main.board_4X4 == true) {
 			SIZE = 4;
 		}
 		Type[][] newBoard = new Type[SIZE][SIZE];
@@ -330,7 +333,7 @@ public class Board {
 				newBoard[i][j] = board[i][j];
 			}
 		}
-		Board b = new Board(newBoard, board_4X4);
+		Board b = new Board(newBoard, Main.board_4X4);
 		return b;
 	}
 	
@@ -365,37 +368,4 @@ public class Board {
         }
         return b.toString();
     }
-
-	/*
-	 * public static void main(String args[]){ int upper_eight = 8; //for 4*4 grid
-	 * int size_four = 4; int[][] grid = new int[size_four][size_four];
-	 * 
-	 * for (int row = 0; row < size_four; row++) { for (int col = 0; col <
-	 * size_four; col++) { System.out.printf(" _", grid[row][col]); }
-	 * System.out.println(); }
-	 * 
-	 * 
-	 * System.out.println(); System.out.println(); System.out.println();
-	 * System.out.println();
-	 * 
-	 * 
-	 * 
-	 * 
-	 * for(int i=0; i < upper_eight+1;i++) { System.out.print(" " +i ); }
-	 * System.out.println(); int size_eight = 9; int[][] grid_eight = new
-	 * int[size_eight][size_eight];
-	 * 
-	 * for (int row = 0; row < size_eight-1; row++) {
-	 * 
-	 * System.out.printf(Integer.toString(row), grid_eight[0]);
-	 * 
-	 * for (int col = 0; col < size_eight-1; col++) { if(row ==3 & col== 3) {
-	 * System.out.printf(" B", grid_eight[row][col]); } else {
-	 * System.out.printf(" _", grid_eight[row][col]); }
-	 * 
-	 * } System.out.println(); }
-	 * 
-	 * 
-	 * }
-	 */
 }
